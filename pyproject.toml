@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "de-project"
+version = "0.1.0"
+description = ""
+authors = ["Radoslaw Jurczak <radoslawjurczak95@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+prefect = "^2.14.15"
+pyspark = "^3.5.0"
+polars = "^0.20.4"
+deltalake = "^0.15.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
