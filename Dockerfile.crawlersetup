@@ -1,0 +1,67 @@
+FROM python:3.10-slim
+LABEL maintainer="Radoslaw Jurczak <radoslaw.jurczak@student.uw.edu.pl>"
+LABEL description="Web app for Scrapyd cluster management, Scrapy log analysis & visualization, Auto packaging, Timer tasks, Monitor & Alert, and Mobile UI."
+
+#     POETRY_HOME="/opt/poetry" \
+#     # make poetry create the virtual environment in the project's root
+#     # it gets named `.venv`
+#     POETRY_VIRTUALENVS_IN_PROJECT=true \
+#     # do not ask any interactive question
+#     POETRY_NO_INTERACTION=1 
+
+RUN apt-get update -y && apt-get install -y locales locales-all
+    # locale-gen pl_PL.UTF-8
+ENV LANG pl_PL.UTF-8
+ENV LANGUAGE pl_PL:pl
+ENV LC_ALL pl_PL.UTF-8
+
+COPY de_project/crawl/ /crawl
+COPY requirements.txt /crawl/requirements.txt
+
+RUN pip install --upgrade pip && \
+    cd crawl && pip install -r requirements.txt
+    # pip install scrapyd logparser && \
+    # curl -sSL https://install.python-poetry.org | python3 - && \
+    # git clone --branch dev https://github.com/czeslaw-milosz/scrapers.git && \
+    # cd scrapers/scrapers/olx && pip install -r requirements.txt
+# RUN mkdir /etc/scrapyd && mkdir -p /scrapyd/logs
+# COPY ../parsers /scrapyd/projects
+# COPY scrapyd.conf /etc/scrapyd/
+# COPY supervisord.conf /etc/
+# COPY scrapydweb_settings_v10.py /scrapyd/
+# COPY ../scrapers /projects
+
+# VOLUME /scrapyd
+# EXPOSE 6800
+
+COPY deployment/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+# CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+    # echo `which poetry` &&  echo `which scrapyd` && \
+    # /usr/bin/supervisord -c /etc/supervisord.conf; 
+    # scrapyd & echo `ls` && cd scrapers/scrapers/olx && \ 
+    # scrapyd-deploy default && cd ../otodom && scrapyd-deploy default && fg scrapyd
+
+# FROM zentekmx/scrapyd
+# LABEL maintainer="Radoslaw Jurczak <radoslaw.jurczak@student.uw.edu.pl>"
+# LABEL description="Web app for Scrapyd cluster management, Scrapy log analysis & visualization, Auto packaging, Timer tasks, Monitor & Alert, and Mobile UI."
+
+# # COPY scrapydweb_settings_v10.py /scrapyd/
+# RUN mkdir /scrapyd
+# WORKDIR /scrapyd/
+# RUN apk add git && \ 
+#     mkdir projects && \
+#     git clone https://github.com/czeslaw-milosz/scrapers.git && \
+#     pip install --upgrade pip && \
+#     pip install scrapyd-client
+# RUN scrapyd
+# RUN echo `ls scrapers` && \
+#     cd scrapers/scrapers/olx && \
+#     scrapyd-deploy default && \
+#     cd ../otodom && \
+#     scrapyd-deploy default
+
+# EXPOSE 6400
+
+# ENTRYPOINT ["scrapyd"]

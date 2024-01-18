@@ -9,11 +9,11 @@ from pyspark.streaming import StreamingContext
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 
-from de_project import config
-from de_project.pipelines import utils
+import config
+from pipelines import utils
 
 
-@prefect.task
+@prefect.task(refresh_cache=True)
 def preprocess_crawl(spark: pyspark.sql.SparkSession, lake_name: str, table_name: str) -> str:
     """Preprocess raw crawl data to the format used by the silver layer of the data lake.
 
@@ -38,10 +38,10 @@ def preprocess_crawl(spark: pyspark.sql.SparkSession, lake_name: str, table_name
     return output_table_url
 
 
-@prefect.task
-def create_business_analytics_table(spark: pyspark.sql.SparkSession, lake_name: str, silver_table_name: str) -> str:
+@prefect.task(refresh_cache=True)
+def create_business_analytics_table(spark: pyspark.sql.SparkSession, lake_name: str, silver_table_url: str) -> str:
     df = spark.read.load(
-        f"s3a://{lake_name}/silver/{silver_table_name}"
+        silver_table_url
     ).select(
         "offer_date", "city", "price_total", "price_per_msq", "size",
     ).dropna(
@@ -52,10 +52,10 @@ def create_business_analytics_table(spark: pyspark.sql.SparkSession, lake_name: 
     return output_table_url
 
 
-@prefect.task
-def create_ml_dataset(spark: pyspark.sql.SparkSession, lake_name: str, silver_table_name: str) -> str:
+@prefect.task(refresh_cache=True)
+def create_ml_dataset(spark: pyspark.sql.SparkSession, lake_name: str, silver_table_url: str) -> str:
     df = spark.read.load(
-        f"s3a://{lake_name}/silver/{silver_table_name}"
+        silver_table_url
     ).select(
         *config.ML_FEATURES_SUBSET
     ).dropna(

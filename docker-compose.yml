@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+
+  scrapyd:
+    build: 
+      # context: deployment
+      dockerfile: Dockerfile.scrapyd
+    ports:
+      - 6800:6800
+    volumes:
+      - scrapyd-volume:/scrapyd:Z
+    networks:
+      - de_network
+    depends_on:
+      - minio
+
+  # scrapydweb:
+  #   image: ryanvin/scrapydweb
+  #   ports:
+  #     - 5000:5000
+  #   depends_on:
+  #     - scrapyd
+  
+  crawlersetup:
+    build: 
+      # context: deployment
+      dockerfile: Dockerfile.crawlersetup
+    depends_on:
+      - scrapyd
+    networks:
+      - de_network
+
+  minio:
+    image: quay.io/minio/minio
+    ports:
+      - '9000:9000'
+      - '9090:9090'
+    networks:
+      - de_network
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+    volumes:
+      - '~/minio/data:/data'
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=adminadmin
+    command: server --console-address ":9090" /data
+      # - MINIO_DEFAULT_BUCKETS=your_bucket_name
+  
+  prefect:
+    build: 
+      dockerfile: Dockerfile.prefect
+    environment:
+      - PREFECT_API_TOKEN
+      - PREFECT_API_URL
+      - DELTA_MAIN_TABLE_NAME
+    depends_on:
+      - minio
+    networks:
+      - de_network
+
+networks:
+  de_network:
+    driver: bridge
+
+volumes:
+  scrapyd-volume:
+
+  # deployspiders:
+    # build: 
+    #   context: deployment
+    #   dockerfile: Dockerfile.scrapyd
+  #   # ports:
+  #   #   - 5000:8000
+  #   depends_on:
+  #     - scrapyd
+    # restart: unless-stopped
