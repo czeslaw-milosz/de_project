@@ -14,13 +14,6 @@ services:
       - de_network
     depends_on:
       - minio
-
-  # scrapydweb:
-  #   image: ryanvin/scrapydweb
-  #   ports:
-  #     - 5000:5000
-  #   depends_on:
-  #     - scrapyd
   
   crawlersetup:
     build: 
@@ -38,15 +31,12 @@ services:
       - '9090:9090'
     networks:
       - de_network
-    # extra_hosts:
-    #   - "host.docker.internal:host-gateway"
     volumes:
       - '~/minio/data:/data'
     environment:
       - MINIO_ROOT_USER=admin
       - MINIO_ROOT_PASSWORD=adminadmin
     command: server --console-address ":9090" /data
-      # - MINIO_DEFAULT_BUCKETS=your_bucket_name
   
   prefect:
     build: 
@@ -60,6 +50,9 @@ services:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
       - MODEL_STORE_AWS_BUCKET
+      - MODELSTORE_ENDPOINT
+    ports:
+      - 8300:8300
     depends_on:
       - minio
     networks:
@@ -74,6 +67,7 @@ services:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
       - MODEL_STORE_AWS_BUCKET
+      - MODELSTORE_ENDPOINT
     depends_on:
       - minio
     ports:

@@ -1,7 +1,14 @@
+# notebooks
+*.ipynb_checkpoints
+*.ipynb
+
 # tmp dirs
 asdf/
 dhenv/
 prefspark/
+workenv/
+sprk/
+mlapienv/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

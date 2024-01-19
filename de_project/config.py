@@ -56,7 +56,7 @@ SILVER_TABLE_SCHEMA = StructType(
     StructField("has_cctv", BooleanType(), True)])
 
 ML_FEATURES_SUBSET = [
-    "price_total", "offer_date", "city", "size", "offer_type", "n_rooms",
+    "price_total", "city", "size", "offer_type", "n_rooms",
     "construction_status", "ownership_type", "floor", "rent",
     "heating_type", "year_built", "building_type",
     "windows_type", "building_material", "primary_market", 

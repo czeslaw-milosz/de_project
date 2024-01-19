@@ -33,20 +33,11 @@ class OtodomSpider(CrawlSpider):
         "https://www.otodom.pl/pl/wyniki/sprzedaz/mieszkanie/malopolskie/krakow/krakow",
         "https://www.otodom.pl/pl/wyniki/sprzedaz/mieszkanie/dolnoslaskie/wroclaw/wroclaw",
     ]
-    # _autopager_n_pages = {
-    #     url: int(autopager.urls(requests.get(url))[-1].split("=")[-1])
-    #     for url in _autopager_base_urls
-    # }
-    # _n_pages = int(autopager.urls(requests.get(_autopager_base_url))[-1].split("=")[-1])
     start_urls = list(itertools.chain.from_iterable(
         [f"{url}?page={i}"
         for i in range(1, int(autopager.urls(requests.get(url))[-1].split("=")[-1]) + 1)]
         for url in _autopager_base_urls
     ))
-    # start_urls = [
-    #     f"https://www.otodom.pl/pl/wyniki/sprzedaz/mieszkanie/mazowieckie/warszawa/warszawa?page={i}"
-    #     for i in range(1, _n_pages + 1)
-    # ]
     rules = [
         Rule(LinkExtractor(allow="oferta/", restrict_xpaths="//a[@data-cy='listing-item-link']"),
             callback="parse_details",

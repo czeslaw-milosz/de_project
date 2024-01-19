@@ -33,23 +33,27 @@ def process_crawl_flow():
     silver_table_url = transformations.preprocess_crawl(
         spark, lake_name=os.getenv("DELTA_MAIN_TABLE_NAME"), table_name="bronze/crawl/olx"
     )
-    # _ = transformations.preprocess_crawl(
-    #     spark, lake_name=os.getenv("DELTA_MAIN_TABLE_NAME"), table_name="bronze/crawl/otodom"
-    # )
+    _ = transformations.preprocess_crawl(
+        spark, lake_name=os.getenv("DELTA_MAIN_TABLE_NAME"), table_name="bronze/crawl/otodom"
+    )
     business_analytics_table_url = transformations.create_business_analytics_table(
         spark, lake_name=os.getenv("DELTA_MAIN_TABLE_NAME"), silver_table_url=silver_table_url
     )
     ml_table_url = transformations.create_ml_dataset(
         spark, lake_name=os.getenv("DELTA_MAIN_TABLE_NAME"), silver_table_url=silver_table_url
     )
-    model_meta_data = ml_pipeline.retrain_price_predictor(
+    model_fname = ml_pipeline.retrain_price_predictor(
         ml_table_url
+    )
+    status = ml_pipeline.notify_model_serving_api(
+        model_fname=model_fname
     )
     return {
         "silver": silver_table_url, 
         "analytics": business_analytics_table_url,
         "ml": ml_table_url,
-        "model_id": model_meta_data["model"]["model_id"],
+        "model_id": model_fname,
+        "model_status": status,
     }
 
 if __name__ == "__main__":

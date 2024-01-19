@@ -1,27 +1,7 @@
 FROM  prefecthq/prefect:2-python3.10
-# FROM jupyter/all-spark-notebook:spark-3.4.0
-# FROM deltaio/delta-docker:latest
 LABEL maintainer="Radoslaw Jurczak <radoslaw.jurczak@student.uw.edu.pl>"
 LABEL description="Container with pyspark and prefect."
 
-# ENV PYTHONUNBUFFERED TRUE \
-#     POETRY_HOME="/opt/poetry" \
-#     # make poetry create the virtual environment in the project's root
-#     # it gets named `.venv`
-#     POETRY_VIRTUALENVS_IN_PROJECT=true \
-#     # do not ask any interactive question
-#     POETRY_NO_INTERACTION=1 
-
-# ENV LANG C
-# ENV LC_ALL C
-# RUN locale-gen en_US.UTF-8
-# USER root
-RUN apt-get update -y
-#  && apt-get install -y locales locales-all
-    # locale-gen pl_PL.UTF-8
-# ENV LANG pl_PL.UTF-8
-# ENV LANGUAGE pl_PL:pl
-# ENV LC_ALL pl_PL.UTF-8
 RUN apt-get update -y && \
     apt-get install -y software-properties-common
 
@@ -34,59 +14,13 @@ WORKDIR /de_project
 ENV PYTHONPATH=/de_project
 
 COPY de_project/ /de_project
-COPY requirements_spark.txt /de_project/requirements_spark.txt
+COPY requirements_flow.txt /de_project/requirements_flow.txt
 
 RUN pip install --upgrade pip && \
-    # pip install scrapyd logparser && \
-    # curl -sSL https://install.python-poetry.org | python3 - && \
-    # git clone --branch dev https://github.com/czeslaw-milosz/scrapers.git && \
-    cd /de_project && pip install -r requirements_spark.txt
-    # cd /de_project && pip install prefect pyspark==3.4.0 delta-spark==2.4.0 deltalake polars
+    cd /de_project && pip install -r requirements_flow.txt
 
 COPY entrypoint_prefect.sh /entrypoint_prefect.sh
 RUN chmod +x /entrypoint_prefect.sh
 ENTRYPOINT ["/entrypoint_prefect.sh"]
-# RUN mkdir /etc/scrapyd && mkdir -p /scrapyd/logs
-# COPY ../parsers /scrapyd/projects
-# COPY scrapyd.conf /etc/scrapyd/
-# COPY supervisord.conf /etc/
-# COPY scrapydweb_settings_v10.py /scrapyd/
-# COPY ../scrapers /projects
 
-# VOLUME /scrapyd
-# EXPOSE 6800
-
-# COPY entrypoint.sh /entrypoint.sh
-# RUN chmod +x /entrypoint.sh
-# ENTRYPOINT ["tini" "--"]
-# CMD ["scrapyd" "--pidfile="]
-
-# ENTRYPOINT ["scrapyd"]
-# CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
-    # echo `which poetry` &&  echo `which scrapyd` && \
-    # /usr/bin/supervisord -c /etc/supervisord.conf; 
-    # scrapyd & echo `ls` && cd scrapers/scrapers/olx && \ 
-    # scrapyd-deploy default && cd ../otodom && scrapyd-deploy default && fg scrapyd
-
-# FROM zentekmx/scrapyd
-# LABEL maintainer="Radoslaw Jurczak <radoslaw.jurczak@student.uw.edu.pl>"
-# LABEL description="Web app for Scrapyd cluster management, Scrapy log analysis & visualization, Auto packaging, Timer tasks, Monitor & Alert, and Mobile UI."
-
-# # COPY scrapydweb_settings_v10.py /scrapyd/
-# RUN mkdir /scrapyd
-# WORKDIR /scrapyd/
-# RUN apk add git && \ 
-#     mkdir projects && \
-#     git clone https://github.com/czeslaw-milosz/scrapers.git && \
-#     pip install --upgrade pip && \
-#     pip install scrapyd-client
-# RUN scrapyd
-# RUN echo `ls scrapers` && \
-#     cd scrapers/scrapers/olx && \
-#     scrapyd-deploy default && \
-#     cd ../otodom && \
-#     scrapyd-deploy default
-
-# EXPOSE 6400
-
-# ENTRYPOINT ["scrapyd"]
+EXPOSE 8300

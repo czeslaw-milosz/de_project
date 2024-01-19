@@ -60,10 +60,7 @@ def create_ml_dataset(spark: pyspark.sql.SparkSession, lake_name: str, silver_ta
         *config.ML_FEATURES_SUBSET
     ).dropna(
         subset="price_total"
-    ).withColumns({
-        "weekday_posted": f.dayofweek(f.col("offer_date")),
-        "month_posted": f.month(f.col("offer_date")),
-    })
+    )
     output_table_url = f"s3a://{lake_name}/gold/ml_dataset"
     df.write.format("delta").mode("overwrite").save(output_table_url)
     return output_table_url
