@@ -1,6 +1,7 @@
+# From Prefect's official image (otherwise prefect doesn't want to run)
 FROM  prefecthq/prefect:2-python3.10
 LABEL maintainer="Radoslaw Jurczak <radoslaw.jurczak@student.uw.edu.pl>"
-LABEL description="Container with pyspark and prefect."
+LABEL description="Container with a working configuration of pyspark and prefect."
 
 RUN apt-get update -y && \
     apt-get install -y software-properties-common
