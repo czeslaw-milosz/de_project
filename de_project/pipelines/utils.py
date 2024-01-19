@@ -7,7 +7,7 @@ def ensure_schema(df: pyspark.sql.DataFrame, master_schema: pyspark.sql.types.St
 
     Args:
         df (pyspark.sql.DataFrame): Input dataframe.
-        master_schema (pyspark.sql.types.StructType): Schema to ensure.
+        master_schema (pyspark.sql.types.StructType): Schema to ensure. See `config.py` for the currently used schema.
 
     Returns:
         pyspark.sql.DataFrame: Dataframe with ensured schema.
@@ -74,6 +74,8 @@ def preprocess_crawl_shared(df: pyspark.sql.DataFrame) -> pyspark.sql.DataFrame:
     1. Convert prices to floats.
     2. Convert floor numbers to integers (0 = ground floor, -1 = basement, 11 = above 10th floor).
     3.Convert m^2 sizes to floats.
+    4. Convert dates to date types.
+    5. Convert timestamps to timestamp types.
 
     Args:
         df (pyspark.sql.DataFrame): Input dataframe.

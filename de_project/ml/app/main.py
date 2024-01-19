@@ -1,3 +1,10 @@
+"""Main module for a very very simple ML serving API.
+
+This api is used to serve the model trained in the ML pipeline.
+It has two endpoints:
+    - /loadmodel - used to trigger reloading the model from storage (by POST request with model's path)
+    - /predict - used to make price predictions using the loaded model (by POST request with data point)
+"""
 import logging
 import os
 

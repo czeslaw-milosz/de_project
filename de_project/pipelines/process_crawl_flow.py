@@ -10,6 +10,16 @@ from pipelines import ml_pipeline, transformations
 
 @prefect.flow(name="process_crawl_flow", log_prints=True)
 def process_crawl_flow():
+    """ Run the whole crawl data processing Prefect pipeline.
+    
+    This pipeline is triggered by the FastAPI app in de_project/pipelines/app/main.py.
+    There are following steps:
+        1. Preprocess crawl data from the raw crawl data table and write to the silver table.
+        2. Create business analytics table from the silver table.
+        3. Create ML dataset from the silver table.
+        4. Retrain price prediction model and save the artifact to the gold table.
+        5. Notify the ML serving API about the new model.
+    """
     spark_conf = (
         SparkConf()
         .set("spark.jars.packages", 'org.apache.hadoop:hadoop-client:3.3.4,org.apache.hadoop:hadoop-aws:3.3.4,io.delta:delta-spark_2.12:3.0.0')

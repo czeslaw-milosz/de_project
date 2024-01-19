@@ -21,6 +21,7 @@ def preprocess_crawl(spark: pyspark.sql.SparkSession, lake_name: str, table_name
     2. Deduplicate dataframe of scraped data.
     3. Apply shared preprocessing.
     4. Apply site-specific preprocessing.
+    5. Write to silver table of Delta Lake.
 
     Args:
         table_url (str): URL of the Delta Lake table with raw crawl data.
@@ -40,6 +41,7 @@ def preprocess_crawl(spark: pyspark.sql.SparkSession, lake_name: str, table_name
 
 @prefect.task(refresh_cache=True)
 def create_business_analytics_table(spark: pyspark.sql.SparkSession, lake_name: str, silver_table_url: str) -> str:
+    """Create business analytics table from the silver table."""
     df = spark.read.load(
         silver_table_url
     ).select(
@@ -54,6 +56,7 @@ def create_business_analytics_table(spark: pyspark.sql.SparkSession, lake_name: 
 
 @prefect.task(refresh_cache=True)
 def create_ml_dataset(spark: pyspark.sql.SparkSession, lake_name: str, silver_table_url: str) -> str:
+    """Create ML dataset from the silver table."""
     df = spark.read.load(
         silver_table_url
     ).select(
