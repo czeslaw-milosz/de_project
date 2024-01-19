@@ -2,7 +2,7 @@
    FROM python:3.10
 
    # Set the working directory in the container
-   WORKDIR /app
+#    WORKDIR /app
 
    # Copy the local code to the container
    COPY de_project/ml/app/ /app
@@ -16,4 +16,4 @@
    EXPOSE 8200
 
    # Command to run the application
-   CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8200"]
+   CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8200"]

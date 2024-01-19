@@ -24,7 +24,11 @@ app = FastAPI(title="ML serving API")
 
 @app.on_event("startup")
 def load_model():
-    app.model = load("final_model.joblib")
+    app.model = None
+
+@app.get("/")
+def root():
+    return {"message": "API is up and running"}
 
 @app.post("/loadmodel", response_model=DummyResponseDTO)
 def loadmodel(model_id:ModelIdDTO):

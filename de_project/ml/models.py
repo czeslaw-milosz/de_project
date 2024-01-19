@@ -41,7 +41,7 @@ def get_price_prediction_pipeline(categorical_columns) -> tuple(Pipeline, sklear
         steps=[("imputer", imputer), ("preprocessor", preprocessor), ("regressor", xgb.XGBRegressor())]
     )
     param_grid = param_grid = {
-        "regressor__eta": list(range(0.01, 0.2, 0.01)),
+        "regressor__eta": [0.01, 0.05, 0.1, 0.2],
         "regressor__max_depth": [2, 3, 5, 7, 10],
         "regressor__n_estimators": list(range(100, 1000, 100)),
     }

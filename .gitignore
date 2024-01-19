@@ -1,5 +1,7 @@
 # tmp dirs
 asdf/
+dhenv/
+prefspark/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
