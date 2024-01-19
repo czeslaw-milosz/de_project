@@ -20,13 +20,15 @@ def process_crawl_flow():
         SparkConf()
         .set("spark.jars.packages", 'org.apache.hadoop:hadoop-client:3.3.4,org.apache.hadoop:hadoop-aws:3.3.4,io.delta:delta-spark_2.12:3.0.0')
         .set("spark.driver.memory", "6g")
-        .set("spark.hadoop.fs.s3a.endpoint", "localhost:9000")
+
+        .set("spark.hadoop.fs.s3a.endpoint", "minio:9000")
         .set("spark.hadoop.fs.s3a.access.key", "admin")
         .set("spark.hadoop.fs.s3a.secret.key", "adminadmin" )
         .set("spark.hadoop.fs.s3a.path.style.access", "true") 
         .set("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
         .set('spark.hadoop.fs.s3a.aws.credentials.provider', 'org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider')
         .set("spark.hadoop.fs.s3a.connection.ssl.enabled", "false")
+
         .set("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") 
         .set("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
         .set("spark.databricks.delta.schema.autoMerge.enabled", "true") # enable adding columns on merge)

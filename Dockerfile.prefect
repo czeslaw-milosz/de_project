@@ -34,7 +34,7 @@ WORKDIR /de_project
 ENV PYTHONPATH=/de_project
 
 COPY de_project/ /de_project
-COPY requirements_prefectt.txt /de_project/requirements_prefect.txt
+COPY requirements_spark.txt /de_project/requirements_prefect.txt
 
 RUN pip install --upgrade pip && \
     # pip install scrapyd logparser && \
