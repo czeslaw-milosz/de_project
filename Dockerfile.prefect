@@ -1,4 +1,6 @@
 FROM  prefecthq/prefect:2-python3.10
+# FROM jupyter/all-spark-notebook:spark-3.4.0
+# FROM deltaio/delta-docker:latest
 LABEL maintainer="Radoslaw Jurczak <radoslaw.jurczak@student.uw.edu.pl>"
 LABEL description="Container with pyspark and prefect."
 
@@ -13,22 +15,33 @@ LABEL description="Container with pyspark and prefect."
 # ENV LANG C
 # ENV LC_ALL C
 # RUN locale-gen en_US.UTF-8
-RUN apt-get update -y && apt-get install -y locales locales-all
+# USER root
+RUN apt-get update -y
+#  && apt-get install -y locales locales-all
     # locale-gen pl_PL.UTF-8
-ENV LANG pl_PL.UTF-8
-ENV LANGUAGE pl_PL:pl
-ENV LC_ALL pl_PL.UTF-8
+# ENV LANG pl_PL.UTF-8
+# ENV LANGUAGE pl_PL:pl
+# ENV LC_ALL pl_PL.UTF-8
+RUN apt-get update -y && \
+    apt-get install -y software-properties-common
+
+RUN apt-get install -y default-jre && \
+    apt-get install -y default-jdk && \
+    update-alternatives --config java && \
+    update-alternatives --config javac
+    
 WORKDIR /de_project
 ENV PYTHONPATH=/de_project
 
 COPY de_project/ /de_project
-COPY requirements_prefect.txt /de_project/requirements_prefect.txt
+COPY requirements_prefectt.txt /de_project/requirements_prefect.txt
 
 RUN pip install --upgrade pip && \
     # pip install scrapyd logparser && \
     # curl -sSL https://install.python-poetry.org | python3 - && \
     # git clone --branch dev https://github.com/czeslaw-milosz/scrapers.git && \
-    cd /de_project && pip install -r requirements_prefect.txt
+    cd /de_project && pip install -r requirements_prefect.txt && \
+    # cd /de_project && pip install prefect pyspark==3.4.0 delta-spark==2.4.0 deltalake polars
 
 COPY entrypoint_prefect.sh /entrypoint_prefect.sh
 RUN chmod +x /entrypoint_prefect.sh
