@@ -35,7 +35,26 @@ def get_detail_fields(response: scrapy.http.response.html.HtmlResponse) -> tuple
         response (scrapy.http.response.html.HtmlResponse): response of otodom scraper
 
     Returns:
-        dict(str, Any): details extracted from response fields
+        dict(str, Any): details extracted from response fields (if extraction was possible, this is NOT always the case):
+            - size (float): size of the flat in square meters
+            - n_rooms (int): number of rooms in the flat
+            - construction_status (str): construction status of the building
+            - ownership_type (str): ownership type of the building
+            - floor (str): on which floor the flat is located
+            - rent (float): rent of the flat in PLN
+            - outdoor (str): type of outdoor space available
+            - parking (str): type of parking available
+            - heating_type (str): type of heating available
+            - market (str): type of market (primary or resold)
+            - offer_type (str): type of the offer (private or business)
+            - year_built (str): year in which the building was built
+            - building_type (str): type of the building
+            - windows_type (str): type of windows in the building
+            - lift (str): whether the building has a lift or not
+            - media_types (str): types of media available
+            - security (str): types of security available
+            - equipment (str): types of equipment available
+            - building_material (str): type of building material used
     """
     output = {}
     return {
@@ -48,6 +67,10 @@ def get_image_urls(response: scrapy.http.response.html.HtmlResponse, img_size: s
     
     Args:
         response (scrapy.http.response.html.HtmlResponse): response of otodom scraper
+        img_size (str, optional): size of the image to extract (as defined by the crawled website). Defaults to "medium".
+
+    Returns:
+        list(str): list of image urls
     """
     item_json = ujson.loads(
         response.xpath("//script[@id='__NEXT_DATA__']/text()").get()
@@ -59,13 +82,17 @@ def get_image_urls(response: scrapy.http.response.html.HtmlResponse, img_size: s
 
 
 def get_fields_from_script_elt(response: scrapy.http.response.html.HtmlResponse) -> tuple[str, str, str, str]:
-    """Extract offer id from response of otodom scraper.
-    
+    """ Extract fields from an embedded script element of otodom scraper response.
+
     Args:
         response (scrapy.http.response.html.HtmlResponse): response of otodom scraper
-    
+
     Returns:
-        str: offer id (formatted according to our convention: otodom_{original_offer_id})
+        tuple: tuple of fields extracted from response (if extraction was possible, this is NOT always the case):
+            - offer_id (str): unique id of the offer
+            - district (str): district in which the flat is located
+            - city (str): city in which the flat is located
+            - region (str): region in which the flat is located
     """
     json_data = ujson.loads(
         response.xpath("//script[@id='__NEXT_DATA__']/text()").get()
@@ -84,13 +111,15 @@ def get_fields_from_script_elt(response: scrapy.http.response.html.HtmlResponse)
 
 
 def get_posting_dates(response: scrapy.http.response.html.HtmlResponse) -> tuple[str|None, str|None]:
-    """Extract offer's posting and refreshing date from response of otodom scraper.
-    
+    """Extract offer's posting and modification date from response of otodom scraper.
+
     Args:
         response (scrapy.http.response.html.HtmlResponse): response of otodom scraper
-    
+
     Returns:
-        tuple(str|None): offer_date, refresh_date
+        tuple: tuple of dates extracted from response (if extraction was possible, this is NOT always the case):
+            - offer_date (str): date on which the offer was posted
+            - modified_date (str): date on which the offer was modified
     """
     page_attrs = ujson.loads(
         response.xpath("//script[@id='__NEXT_DATA__']/text()").get()

@@ -20,7 +20,6 @@ def get_detail_fields(response: scrapy.http.response.html.HtmlResponse) -> tuple
             - size (float): size of the flat in square meters
             - n_rooms (int): number of rooms in the flat
     """
-    # select from body an unordered list with class css-sfcl1s and extract texts of paragraphs in its items, including spans within paragraphs:
     list_items = response.xpath("//ul[@class='css-sfcl1s']/li/p//text()").getall()
     tmp = [x for x in list_items if x in {"Prywatne", "Firmowe"}]
     offer_type = tmp[0] if tmp else ""
@@ -46,6 +45,18 @@ def get_detail_fields(response: scrapy.http.response.html.HtmlResponse) -> tuple
 
 
 def get_fields_from_script_elt(response) -> tuple[str, str, str, str]:
+    """ Extract fields from an embedded script element of olx scraper response.
+
+    Args:
+        response (scrapy.http.response.html.HtmlResponse): response of olx scraper
+
+    Returns:
+        tuple: tuple of fields extracted from response (if extraction was possible, this is NOT always the case):
+            - price_total (str): total price of the flat
+            - location_district (str): district in which the flat is located
+            - location_city (str): city in which the flat is located
+            - location_region (str): region in which the flat is located
+    """
     script_elt = response.xpath("//script[@id='olx-init-config']/text()").get()
     js_dict = ujson.loads(ujson.loads(
         script_elt.split("\n")[4].strip().replace("window.__PRERENDERED_STATE__= ", "")[:-1]

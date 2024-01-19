@@ -42,17 +42,9 @@ COOKIES_ENABLED = False
 DEFAULT_REQUEST_HEADERS =  {
             "Accept": "*/*",
             "Accept-Encoding": "gzip, deflate, br",
-            # "Accept-Language": "en-US,en;q=0.9",
             "Cache-Control": "no-cache",
             "Pragma": "no-cache",
             "Referer": "https://www.olx.pl/nieruchomosci/mieszkania/",
-            # "Sec-Ch-Ua": "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"
-            # "Sec-Ch-Ua-Mobile": "?0",
-            # "Sec-Ch-Ua-Platform": "Linux",
-            # "Sec-Fetch-Dest": "empty",
-            # "Sec-Fetch-Mode": "no-cors",
-            # "Sec-Fetch-Site": "same-origin",
-            # "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         }
 
 # Enable or disable spider middlewares
@@ -93,7 +85,6 @@ USER_AGENT = latest_user_agents.get_random_user_agent()
 ITEM_PIPELINES = {
    "crawl.pipelines.BatchDeltaExportPipeline": 300,
    "crawl.pipelines.RootImagesPipeline": 1,
-   # "scrapy.pipelines.images.ImagesPipeline": 1,
 
 }
 
@@ -125,20 +116,10 @@ FEED_EXPORT_ENCODING = "utf-8"
 
 
 # Configure export feed
-# FEEDS = {
-#     "s3://scrapytest/%(name)s_%(time)s.csv": {
-#         "format": "csv",
-#         "overwrite": True,
-#     }
-# }
 IMAGES_STORE = f"s3://housing/bronze/images/"
 AWS_ENDPOINT_URL = "http://minio:9000"
 AWS_ACCESS_KEY_ID = "admin"
 AWS_SECRET_ACCESS_KEY = "adminadmin"
-
-# PULSAR_BATCH_SIZE = 256
-# PULSAR_URL = "pulsar://localhost:6650"
-# PULSAR_TOPIC = "crawl"
 
 EXPORT_BATCH_SIZE = 512
 DELTA_TABLE = f"housing/bronze/crawl"

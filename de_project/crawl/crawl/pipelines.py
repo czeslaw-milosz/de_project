@@ -11,6 +11,7 @@ from scrapy.pipelines.images import ImagesPipeline
 
 
 class BatchDeltaExportPipeline:
+    """Custom pipeline for exporting items to delta table in batches."""
     def __init__(self, batch_size, delta_endpoint, delta_table, delta_id, delta_key, site_name):
         self.batch_size = batch_size
         self.delta_endpoint = delta_endpoint
@@ -71,7 +72,6 @@ class BatchDeltaExportPipeline:
 
 class RootImagesPipeline(ImagesPipeline):
     """gets rid of scrapy's hardcoded '/full/' path"""
-
     def file_path(self, request, response=None, info=None, *, item=None):
         """This is the method used to determine file path"""
         path = super().file_path(request, response, info)
