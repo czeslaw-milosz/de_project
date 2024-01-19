@@ -48,17 +48,18 @@ services:
     command: server --console-address ":9090" /data
       # - MINIO_DEFAULT_BUCKETS=your_bucket_name
   
-  # prefect:
-  #   build: 
-  #     dockerfile: Dockerfile.prefect
-  #   environment:
-  #     - PREFECT_API_TOKEN
-  #     - PREFECT_API_URL
-  #     - DELTA_MAIN_TABLE_NAME
-  #   depends_on:
-  #     - minio
-  #   networks:
-  #     - de_network
+  prefect:
+    build: 
+      dockerfile: Dockerfile.prefect
+    environment:
+      - PREFECT_API_TOKEN
+      - PREFECT_API_URL
+      - PREFECT_WORKSPACE
+      - DELTA_MAIN_TABLE_NAME
+    depends_on:
+      - minio
+    networks:
+      - de_network
 
 networks:
   de_network:
