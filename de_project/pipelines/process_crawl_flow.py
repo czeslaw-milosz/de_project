@@ -1,17 +1,11 @@
-import datetime
 import os
 
 import prefect
-import pyspark
-from prefect.runtime import flow_run, task_run
 from pyspark.conf import SparkConf
 from pyspark.context import SparkContext
-from pyspark.streaming import StreamingContext
 from pyspark.sql import SparkSession
-from pyspark.sql import functions as f
 
-# import config
-from pipelines import transformations
+from pipelines import ml_pipeline, transformations
 
 
 @prefect.flow(name="process_crawl_flow", log_prints=True)
@@ -48,10 +42,14 @@ def process_crawl_flow():
     ml_table_url = transformations.create_ml_dataset(
         spark, lake_name=os.getenv("DELTA_MAIN_TABLE_NAME"), silver_table_url=silver_table_url
     )
+    model_meta_data = ml_pipeline.retrain_price_predictor(
+        ml_table_url
+    )
     return {
         "silver": silver_table_url, 
         "analytics": business_analytics_table_url,
         "ml": ml_table_url,
+        "model_id": model_meta_data["model"]["model_id"],
     }
 
 if __name__ == "__main__":

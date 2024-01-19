@@ -6,12 +6,14 @@
 
    # Copy the local code to the container
    COPY de_project/ml/app/ /app
+   COPY requirements_mlapi.txt /app/requirements_mlapi.txt
 
    # Install FastAPI and Uvicorn
-   RUN pip install fastapi uvicorn
+   RUN pip install --upgrade pip && \
+       pip install -r /app/requirements_mlapi.txt
 
    # Expose the port the app runs on
-   EXPOSE 8000
+   EXPOSE 8200
 
    # Command to run the application
-   CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+   CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8200"]

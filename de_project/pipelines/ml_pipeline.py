@@ -2,6 +2,8 @@ import os
 
 import modelstore
 import pandas as pd
+import polars as pl
+import prefect
 import sklearn
 import xgboost as xgb
 from sklearn.compose import ColumnTransformer
@@ -10,8 +12,36 @@ from sklearn.model_selection import RandomizedSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OrdinalEncoder
 
+from typing import Any
 
-def get_price_prediction_pipeline(categorical_columns) -> tuple(Pipeline, sklearn.model_selection.RandomizedSearchCV):
+
+@prefect.task
+def retrain_price_predictor(ml_gold_table_url: str) -> dict[Any]:
+    df = pl.read_delta(
+        source=ml_gold_table_url,
+        storage_options={
+            "AWS_ENDPOINT_URL": os.getenv("AWS_ENDPOINT_URL"),
+            "AWS_ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID"),
+            "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY"),
+            "AWS_REGION": "us-east-1",
+            "AWS_ALLOW_HTTP": "true",
+            # "AWS_S3_ALLOW_UNSAFE_RENAME": "true",
+        }
+    ).drop(["offer_date"])
+    categorical_columns = df.select(~pl.selectors.by_dtype(pl.NUMERIC_DTYPES)).columns
+    model, search_cv = get_price_prediction_pipeline(categorical_columns)
+    X_train = df.select(~pl.selectors.by_name("price_total")).to_pandas().dropna(axis="columns")
+    y_train = df.select("price_total").to_pandas()
+    search_cv.fit(X_train, y_train)
+    best_model = search_cv.best_estimator_
+
+
+    model_store = create_minio_model_store()
+    meta_data = model_store.upload("price-prediction", model=best_model)
+    return meta_data
+
+
+def get_price_prediction_pipeline(categorical_columns) -> tuple[Pipeline, sklearn.model_selection.RandomizedSearchCV]:
     """Return a pipeline for predicting house prices."""
     impute_mean = SimpleImputer(missing_values=pd.NA, strategy="mean")
     impute_mode = SimpleImputer(missing_values=pd.NA, strategy="most_frequent")
@@ -66,3 +96,4 @@ def create_minio_model_store() -> modelstore.ModelStore:
         bucket_name=os.environ["MODEL_STORE_AWS_BUCKET"],
         root_prefix=os.environ["DELTA_MAIN_TABLE"],
     )
+

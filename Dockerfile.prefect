@@ -34,13 +34,13 @@ WORKDIR /de_project
 ENV PYTHONPATH=/de_project
 
 COPY de_project/ /de_project
-COPY requirements_spark.txt /de_project/requirements_prefect.txt
+COPY requirements_spark.txt /de_project/requirements_spark.txt
 
 RUN pip install --upgrade pip && \
     # pip install scrapyd logparser && \
     # curl -sSL https://install.python-poetry.org | python3 - && \
     # git clone --branch dev https://github.com/czeslaw-milosz/scrapers.git && \
-    cd /de_project && pip install -r requirements_prefect.txt
+    cd /de_project && pip install -r requirements_spark.txt
     # cd /de_project && pip install prefect pyspark==3.4.0 delta-spark==2.4.0 deltalake polars
 
 COPY entrypoint_prefect.sh /entrypoint_prefect.sh

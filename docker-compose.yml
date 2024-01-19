@@ -56,8 +56,28 @@ services:
       - PREFECT_API_URL
       - PREFECT_WORKSPACE
       - DELTA_MAIN_TABLE_NAME
+      - AWS_ENDPOINT_URL
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - MODEL_STORE_AWS_BUCKET
     depends_on:
       - minio
+    networks:
+      - de_network
+
+  mlapi:
+    build: 
+      dockerfile: Dockerfile.mlapi
+    environment:
+      - DELTA_MAIN_TABLE_NAME
+      - AWS_ENDPOINT_URL
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - MODEL_STORE_AWS_BUCKET
+    depends_on:
+      - minio
+    ports:
+    - 8200:8200
     networks:
       - de_network
 

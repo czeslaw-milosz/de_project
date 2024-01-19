@@ -147,6 +147,7 @@ def preprocess_otodom(df: pyspark.sql.DataFrame) -> pyspark.sql.DataFrame:
         "gated_community": f.col("security").contains("teren zamknięty"),
         "guarded_building": f.col("security").contains("ochrona"),
         "has_cctv": f.col("security").contains("monitoring"),
+        "city": f.lower(f.col("city")),
     }).replace(
     {"drewniane": "wood", "plastikowe": "pvc", "aluminiowe": "aluminium"}, subset="windows_type"
     ).replace(
@@ -180,6 +181,7 @@ def preprocess_olx(df: pyspark.sql.DataFrame) -> pyspark.sql.DataFrame:
     """
     return df.withColumns({
         "offer_type": f.when(f.col("offer_type").isNull(), None).when(f.col("offer_type") == "Prywatne", "private_owner").otherwise("company"),
+        "city": f.lower(f.col("city")),
     }).replace(
         {"Loft": "loft", "Blok": "block", "Szeregowiec": "row_housing", "Apartamentowiec": "apartment_building",
         "Dom wolnostojący": "house", "Kamienica": "tenement", "Pozostałe": "other"}, subset="building_type"
