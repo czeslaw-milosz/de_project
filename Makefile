@@ -1,4 +1,4 @@
-.PHONY : clean startflow
+.PHONY : clean startflow startspiders startdh
 
 startspiders: # send requests to scrapyd server to start crawlers
 	curl http://localhost:6800/schedule.json -d project=crawl -d spider=olx;
@@ -6,6 +6,9 @@ startspiders: # send requests to scrapyd server to start crawlers
 
 startflow: # send request to trigger prefect data processing flow
 	curl http://localhost:8300/
+
+startdh: # start datahub
+	datahub docker quickstart
 
 clean: # recursively clean python cache files
 	find . -type d -name '__pycache__' -exec rm -rf {} +
