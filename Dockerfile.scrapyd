@@ -1,0 +1,14 @@
+FROM  vimagick/scrapyd
+LABEL maintainer="Radoslaw Jurczak <radoslaw.jurczak@student.uw.edu.pl>"
+LABEL description="Scrapyd server for deploying, scheduling and running Scrapy spiders."
+
+RUN apt-get update -y && apt-get install -y locales locales-all
+
+ENV LANG pl_PL.UTF-8
+ENV LANGUAGE pl_PL:pl
+ENV LC_ALL pl_PL.UTF-8
+
+COPY requirements.txt /crawl/requirements.txt
+
+RUN pip install --upgrade pip && \
+    cd crawl && pip install -r requirements.txt

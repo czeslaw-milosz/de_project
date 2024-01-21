@@ -1,0 +1,27 @@
+# From Prefect's official image (otherwise prefect doesn't want to run)
+FROM  prefecthq/prefect:2-python3.10
+LABEL maintainer="Radoslaw Jurczak <radoslaw.jurczak@student.uw.edu.pl>"
+LABEL description="Container with a working configuration of pyspark and prefect."
+
+RUN apt-get update -y && \
+    apt-get install -y software-properties-common
+
+RUN apt-get install -y default-jre && \
+    apt-get install -y default-jdk && \
+    update-alternatives --config java && \
+    update-alternatives --config javac
+    
+WORKDIR /de_project
+ENV PYTHONPATH=/de_project
+
+COPY de_project/ /de_project
+COPY requirements_flow.txt /de_project/requirements_flow.txt
+
+RUN pip install --upgrade pip && \
+    cd /de_project && pip install -r requirements_flow.txt
+
+COPY entrypoint_prefect.sh /entrypoint_prefect.sh
+RUN chmod +x /entrypoint_prefect.sh
+ENTRYPOINT ["/entrypoint_prefect.sh"]
+
+EXPOSE 8300

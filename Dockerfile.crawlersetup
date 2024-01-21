@@ -1,0 +1,19 @@
+FROM python:3.10-slim
+LABEL maintainer="Radoslaw Jurczak <radoslaw.jurczak@student.uw.edu.pl>"
+LABEL description="Web app for Scrapyd cluster management, Scrapy log analysis & visualization, Auto packaging, Timer tasks, Monitor & Alert, and Mobile UI."
+
+RUN apt-get update -y && apt-get install -y locales locales-all
+
+ENV LANG pl_PL.UTF-8
+ENV LANGUAGE pl_PL:pl
+ENV LC_ALL pl_PL.UTF-8
+
+COPY de_project/crawl/ /crawl
+COPY requirements.txt /crawl/requirements.txt
+
+RUN pip install --upgrade pip && \
+    cd crawl && pip install -r requirements.txt
+
+COPY deployment/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
