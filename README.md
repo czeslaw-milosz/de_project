@@ -1,7 +1,11 @@
 # de_project
 Main repository for Data Engineering @ MIMUW 2024 course project
 
-Generally, the system is described in the video.
+On a general level, the system is described in the video. Here deployment/running details are specified.
+
+Prerequisites:
+ - a working installation of `docker` and `docker-compose`
+ - for running datahub, one should datahub installed for Python as described here: https://datahubproject.io/docs/quickstart/
 
 First, please specify the configuration in `.env` and run `source .env`; everything can stay as-is *except* for Prefect Cloud API token, URL and workspace -- I'm using PRefect Cloud because I can't fit Prefect server alongside all the other containers on my laptop, also it seems to be the more production-suitable option.
 
@@ -30,4 +34,10 @@ In the end of the pipeline, a ML model will be trained and persisted to Minio; s
 Teardown by:
 ```
 docker compose down && docker rm -f
+```
+
+Datahub was launched as follows:
+```
+cd dhub
+python3 -m datahub docker quickstart --quickstart-compose-file ./docker-compose-without-neo4j-m1.quickstart.yml
 ```
